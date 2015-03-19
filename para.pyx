@@ -1,21 +1,21 @@
-from cython.parallel import parallel, prange
-from libc.stdlib cimport abort, malloc, free
+cimport cython
+from numpy cimport ndarray as ar
+from libc.math cimport exp, log
+from cython.parallel import prange
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef cysumpar(ar[double] A):
+    cdef double tot=0.
+    cdef int i, n=A.size
+    for i in prange(n, nogil=True):
+        tot +=exp(log(exp(log(A[i]))))
+    return tot
 
-cdef Py_ssize_t idx, i, n = 100
-cdef int * local_buf
-cdef size_t size = 10
+cpdef nocyn(ar[double] B):
+    cdef double tot=0.0
+    cdef int i, n=B.size
+    for i in range(n):
+        tot +=exp(log(exp(log(B[i]))))
+    return tot
 
-with nogil, parallel():
-    local_buf = <int *> malloc(sizeof(int) * size)
-    if local_buf == NULL:
-        abort()
 
-    # populate our local buffer in a sequential loop
-    for i in xrange(size):
-        local_buf[i] = i * 2
-
-    # share the work using the thread-local buffer(s)
-    for i in prange(n, schedule='guided'):
-        func(local_buf)
-
-    free(local_buf)

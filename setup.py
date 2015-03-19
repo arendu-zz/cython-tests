@@ -6,8 +6,8 @@ from Cython.Distutils import build_ext
 ext_modules = Extension(
         "asd",
         ["asd.pyx"],
-        extra_compile_args=['-fopenmp'],
-        extra_link_args=['-fopenmp'],
+        #3extra_compile_args=['-fopenmp'],
+        #extra_link_args=['-fopenmp'],
         )
 
 setup(
